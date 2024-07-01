@@ -36,9 +36,9 @@ def get_custom_image(avatar: str, background: str, ctx1: str, ctx2: str, ctx3: s
         editor.ellipse((250 + horizontal_shift, 90), 150, 150, outline="white", stroke_width=5)
 
        
-        editor.text((320 + horizontal_shift, 260), ctx1, color="white", font=poppins, align="center")
-        editor.text((320 + horizontal_shift, 315), ctx2, color="white", font=poppins_small, align="center")
-        editor.text((320 + horizontal_shift, 350), ctx3, color="white", font=poppins_small, align="center")
+        editor.text((320 + horizontal_shift, 260), ctx1, color="green", font=poppins, align="center")
+        editor.text((320 + horizontal_shift, 315), ctx2, color="red", font=poppins_small, align="center")
+        editor.text((320 + horizontal_shift, 350), ctx3, color="#CCFF00", font=poppins_small, align="center")
 
         
         img_buffer = BytesIO()
