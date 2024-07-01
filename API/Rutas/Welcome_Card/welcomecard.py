@@ -7,7 +7,7 @@ import logging
 router = APIRouter()
 
 @router.get("/api/welcomecard/")
-def get_custom_image(avatar: str, background: str, ctx1: str="WELCOME", ctx2: str="xquab#0", ctx3: str="You are the 457th Member"):
+def get_custom_image(avatar: str, background: str, ctx1: str, ctx2: str, ctx3: str):
     try:
         
         avatar_response = requests.get(avatar)
