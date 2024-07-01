@@ -35,20 +35,24 @@ def get_custom_image(avatar: str, background: str, ctx1: str, ctx2: str, ctx3: s
         editor.paste(avatar_image.image, (250 + horizontal_shift, 90))
         editor.ellipse((250 + horizontal_shift, 90), 150, 150, outline="white", stroke_width=5)
 
-        # Función para añadir texto con sombra
-        def add_text_with_shadow(position, text, color, font, align="left"):
-            shadow_color = "black"  # Color de la sombra
-            shadow_offset = 2  # Desplazamiento de la sombra
+        # Función para añadir texto con trazo oscuro
+        def add_text_with_stroke(position, text, color, font, align="left"):
+            stroke_color = "black"  # Color del trazo
+            stroke_width = 2  # Ancho del trazo
 
-            # Texto de sombra
-            editor.text((position[0] + shadow_offset, position[1] + shadow_offset), text, color=shadow_color, font=font, align=align)
+            # Texto con trazo
+            editor.text((position[0] - stroke_width, position[1]), text, color=stroke_color, font=font, align=align)
+            editor.text((position[0] + stroke_width, position[1]), text, color=stroke_color, font=font, align=align)
+            editor.text((position[0], position[1] - stroke_width), text, color=stroke_color, font=font, align=align)
+            editor.text((position[0], position[1] + stroke_width), text, color=stroke_color, font=font, align=align)
+
             # Texto principal
             editor.text(position, text, color=color, font=font, align=align)
 
-        # Añadir texto con borde
-        add_text_with_shadow((320 + horizontal_shift, 260), ctx1, color="white", font=poppins, align="center")
-        add_text_with_shadow((320 + horizontal_shift, 315), ctx2, color="white", font=poppins_small, align="center")
-        add_text_with_shadow((320 + horizontal_shift, 350), ctx3, color="white", font=poppins_small, align="center")
+        # Añadir texto con trazo oscuro
+        add_text_with_stroke((320 + horizontal_shift, 260), ctx1, color="white", font=poppins, align="center")
+        add_text_with_stroke((320 + horizontal_shift, 315), ctx2, color="white", font=poppins_small, align="center")
+        add_text_with_stroke((320 + horizontal_shift, 350), ctx3, color="white", font=poppins_small, align="center")
 
         # Guardar la imagen resultante en un buffer
         img_buffer = BytesIO()
