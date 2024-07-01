@@ -7,7 +7,7 @@ import logging
 router = APIRouter()
 
 @router.get("/api/welcomecard/")
-def get_custom_image(avatar: str, background: str, ctx1: str="WELCOME", ctx2: str="xquab#0", ctx3: str="You are the 457th Member"):
+def get_custom_image(avatar: str, background: str = None, ctx1: str="WELCOME", ctx2: str="xquab#0", ctx3: str="You are the 457th Member"):
     try:
         
         avatar_response = requests.get(avatar)
@@ -15,21 +15,27 @@ def get_custom_image(avatar: str, background: str, ctx1: str="WELCOME", ctx2: st
             raise HTTPException(status_code=400, detail="Failed to download avatar image.")
         avatar_image = Editor(BytesIO(avatar_response.content)).resize((150, 150)).circle_image()
 
-        
-        background_response = requests.get(background)
+
+            if background_url is None:
+        background_path = "API/Rutas/Welcome_Card/WFondo.png"
+           else:
+
+       
+        background_response = requests.get(background_url)
         if background_response.status_code != 200:
             raise HTTPException(status_code=400, detail=f"Failed to download background image. Status code: {background_response.status_code}, Reason: {background_response.reason}")
-        background_image = Editor(BytesIO(background_response.content)).resize((800, 400)).image
+        background_image = BytesIO(background_response.content)
+        background_path = background_image
 
         
-        poppins = Font.poppins(size=50, variant="bold")
-        poppins_small = Font.poppins(size=25, variant="regular")
+        poppins = Font.poppins(size=80)
+        gen = Editor(background_path).resize((900, 300))
+        
 
        
         horizontal_shift = 63
 
-       
-        editor = Editor(background_image)
+      
 
         
         editor.paste(avatar_image.image, (250 + horizontal_shift, 90))
