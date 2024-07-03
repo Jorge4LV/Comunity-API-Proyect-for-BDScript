@@ -7,8 +7,11 @@ import logging
 router = APIRouter()
 
 @router.get("/api/welcomecard/")
-def get_custom_image(avatar: str, background: str, ctx1: str, ctx2: str="¡Esperamos que disfrutes tu estancia!", ctx3: str="CLUB DUDUA - «Elegancia y Discreción»"):
+def get_custom_image(avatar: str, ctx1: str, ctx2: str="¡Esperamos que disfrutes tu estancia!", ctx3: str="CLUB DUDUA - «Elegancia y Discreción»"):
     try:
+        # URL del fondo
+        background_url = "https://i.postimg.cc/4xdgRTwz/Bot2vgN.png"
+
         # Descargar y procesar el avatar
         avatar_response = requests.get(avatar)
         if avatar_response.status_code != 200:
@@ -16,7 +19,7 @@ def get_custom_image(avatar: str, background: str, ctx1: str, ctx2: str="¡Esper
         avatar_image = Editor(BytesIO(avatar_response.content)).resize((150, 150)).circle_image()
 
         # Descargar y procesar el fondo
-        background_response = requests.get(background)
+        background_response = requests.get(background_url)
         if background_response.status_code != 200:
             raise HTTPException(status_code=400, detail=f"Failed to download background image. Status code: {background_response.status_code}, Reason: {background_response.reason}")
         background_image = Editor(BytesIO(background_response.content)).resize((800, 400)).image
