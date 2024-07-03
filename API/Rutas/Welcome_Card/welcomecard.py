@@ -3,39 +3,40 @@ from easy_pil import Editor, Font
 from io import BytesIO
 import requests
 import logging
+from functools import lru_cache
 
 router = APIRouter()
+
+# Configurar fuentes una sola vez
+poppins = Font.poppins(size=50, variant="bold")
+poppins_small = Font.poppins(size=25, variant="regular")
+
+# Iniciar el editor con el fondo una sola vez
+background_url = "https://i.postimg.cc/4xdgRTwz/Bot2vgN.png"
+background_response = requests.get(background_url)
+if background_response.status_code != 200:
+    raise RuntimeError(f"Failed to download background image. Status code: {background_response.status_code}, Reason: {background_response.reason}")
+background_image = Editor(BytesIO(background_response.content)).resize((800, 400)).image
 
 @router.get("/api/welcomecard/")
 def get_custom_image(avatar: str, ctx1: str, ctx2: str="¡Esperamos que disfrutes tu estancia!", ctx3: str="CLUB DUDUA - «Elegancia y Discreción»"):
     try:
-        # URL del fondo
-        background_url = "https://i.postimg.cc/4xdgRTwz/Bot2vgN.png"
+        # Descargar y procesar el avatar si no está en cache
+        @lru_cache(maxsize=32)
+        def fetch_avatar_image(url):
+            response = requests.get(url)
+            if response.status_code != 200:
+                raise RuntimeError(f"Failed to download avatar image. Status code: {response.status_code}")
+            return Editor(BytesIO(response.content)).resize((150, 150)).circle_image().image
 
-        # Descargar y procesar el avatar
-        avatar_response = requests.get(avatar)
-        if avatar_response.status_code != 200:
-            raise HTTPException(status_code=400, detail="Failed to download avatar image.")
-        avatar_image = Editor(BytesIO(avatar_response.content)).resize((150, 150)).circle_image()
+        avatar_image = fetch_avatar_image(avatar)
 
-        # Descargar y procesar el fondo
-        background_response = requests.get(background_url)
-        if background_response.status_code != 200:
-            raise HTTPException(status_code=400, detail=f"Failed to download background image. Status code: {background_response.status_code}, Reason: {background_response.reason}")
-        background_image = Editor(BytesIO(background_response.content)).resize((800, 400)).image
-
-        # Configurar fuentes
-        poppins = Font.poppins(size=50, variant="bold")
-        poppins_small = Font.poppins(size=25, variant="regular")
-
-        # Desplazamiento horizontal
-        horizontal_shift = 63
-
-        # Iniciar el editor con la imagen de fondo
-        editor = Editor(background_image)
+        # Iniciar el editor con una copia del fondo para cada solicitud
+        editor = Editor(background_image.copy())
 
         # Pegar el avatar y añadir un borde blanco
-        editor.paste(avatar_image.image, (250 + horizontal_shift, 90))
+        horizontal_shift = 63
+        editor.paste(avatar_image, (250 + horizontal_shift, 90))
         editor.ellipse((250 + horizontal_shift, 90), 150, 150, outline="white", stroke_width=5)
 
         # Función para añadir texto con trazo oscuro
